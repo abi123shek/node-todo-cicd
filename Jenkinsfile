@@ -1,35 +1,52 @@
-pipeline{
-    agent { label 'dev-server' }
+
+@Library("myshare") _
+pipeline {
     
-    stages{
-        stage("Code Clone"){
-            steps{
-                echo "Code Clone Stage"
-                git url: "https://github.com/LondheShubham153/node-todo-cicd.git", branch: "master"
-            }
-        }
-        stage("Code Build & Test"){
-            steps{
-                echo "Code Build Stage"
-                sh "docker build -t node-app ."
-            }
-        }
-        stage("Push To DockerHub"){
-            steps{
-                withCredentials([usernamePassword(
-                    credentialsId:"dockerHubCreds",
-                    usernameVariable:"dockerHubUser", 
-                    passwordVariable:"dockerHubPass")]){
-                sh 'echo $dockerHubPass | docker login -u $dockerHubUser --password-stdin'
-                sh "docker image tag node-app:latest ${env.dockerHubUser}/node-app:latest"
-                sh "docker push ${env.dockerHubUser}/node-app:latest"
+     agent { label "ubuntu"}
+     
+     stages {
+         
+         stage("ello")
+         {
+             steps{
+                 script{
+                    hello()
+                 }
+             }
+         }
+         
+         stage("code") {
+             steps {
+                script{
+                    clone("https://github.com/abi123shek/node-todo-cicd.git","master")
+                 
                 }
-            }
-        }
-        stage("Deploy"){
-            steps{
-                sh "docker compose down && docker compose up -d --build"
-            }
-        }
+             }
+         }
+         stage("build") {
+             steps {
+                 
+                 script{
+                     docker_build("todo-app","latest","abishekchamlagai")
+                 }
+             }
+         }
+          stage("push to dockerhub") {
+             steps {
+                 script{
+                     docker_push("todo-app","latest","abishekchamlagai")
+                    }
+                  }
+             }
+         
+         
+         
+
+         stage("deploy") {
+             steps {
+                 sh "docker-compose up -d" 
+                 echo "Node.js application deployed successfully"
+             }
+         }
     }
 }
