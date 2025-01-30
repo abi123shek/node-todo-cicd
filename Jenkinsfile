@@ -1,5 +1,5 @@
 
-@Library("myshare") _
+@Library("Shared") _
 pipeline {
     
      agent { label "ubuntu"}
