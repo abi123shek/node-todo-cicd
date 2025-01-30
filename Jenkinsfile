@@ -31,13 +31,20 @@ pipeline {
                  }
              }
          }
-          stage("push to dockerhub") {
+                   stage("push to dockerhub") {
              steps {
-                 script{
-                     docker_push("todo-app","latest","abishekchamlagai")
-                    }
+                  echo "Connecting to docker hub"
+                  withCredentials([usernamePassword('credentialsId':"DockerConfig", 
+                  passwordVariable:"DockerConfigpass", usernameVariable:"DockerConfigUser")]){
+                      
+                 sh "docker login -u ${env.DockerConfigUser} -p ${env.DockerConfigpass}" 
+                 sh "docker image tag todo-app:latest  ${env.DockerConfigUser}/todo-app:latest"
+                 sh "docker push ${env.DockerConfigUser}/todo-app:latest"
+                 echo "Node.js application deployed successfully"
                   }
              }
+         }
+
          
          
          
