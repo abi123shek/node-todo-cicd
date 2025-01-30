@@ -27,7 +27,7 @@ pipeline {
              steps {
                  
                  script{
-                     docker_build("todo-app","latest","abishekchamlagai")
+                     docker_build("todo-app-v1.1","latest","abishekchamlagai")
                  }
              }
          }
